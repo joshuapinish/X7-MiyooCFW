@@ -8,8 +8,8 @@ The target goal is a removable-SD hardware experiment, but there are two differe
 - Its ELF metadata describes an executable section of 214,260 bytes, matching the decoded payload size. Use `extracted/bulk-decoded/drv__display.drv.payload.bin` for reverse-engineering.
 - The decoded payload contains `LCD_HSD045F8W7_9806E__4_5`, `lcd0_para`, `lcd_bl_en_used`, `lcd_pwm_used`, and strings related to SPI display writes.
 - The decoded payload and MiyooCFW's kernel are not interchangeable artifacts. The MiyooCFW kernel/device-tree tree is for Allwinner suniv/F1C100S. This target board needs its own boot/kernel support before a MiyooCFW image could run.
-- The public ActSDK repository is useful as a source reference, but its LCD Makefile explicitly targets MIPS 4KEc with the SDE MIPS toolchain. It must not be used as the X7 compiler/build recipe just because both projects come from Actions Semiconductor.
-- ARM ELF metadata proves the driver payload's code format. It does not, by itself, prove the exact CPU core on the board or establish a loadable Linux module ABI. Some public ATJ2273S listings identify MIPS32, so use the exact chip marking/board revision and the original boot images to settle this mismatch before selecting a target compiler.
+- The decoded display payload is an ARM ELF32 little-endian/EABI4 code image. That is the strongest architecture evidence for this specific module.
+- The public ActSDK LCD Makefile explicitly targets MIPS 4KEc with the SDE MIPS toolchain. Treat it as a reference for Actions' older LCD-driver design only, not as the compiler/build recipe for this ARM payload. A Linux kernel module also needs the exact target kernel ABI; an ARM ELF alone does not establish that ABI.
 
 ## The practical route to first hardware testing
 

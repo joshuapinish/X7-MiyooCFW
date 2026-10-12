@@ -13,9 +13,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install build tools
-        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build gcc
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build gcc binutils-arm-none-eabi
       - name: Check driver analysis script syntax
         run: bash -n scripts/analyze-arm-driver.sh
+      - name: Smoke-test raw ARM payload analysis
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          Path("build-arm-payload.bin").write_bytes(bytes.fromhex("0020a0e10010a0e3"))
+          PY
+          bash scripts/analyze-arm-driver.sh build-arm-payload.bin build/arm-analysis
+          grep -Eq 'mov[[:space:]]+r2, r0' build/arm-analysis/disassembly.txt
       - name: Configure
         run: cmake -S . -B build -G Ninja -DX7_RAM_MIB=${{ matrix.ram_mib }} -DX7_BUILD_TESTS=ON
       - name: Build

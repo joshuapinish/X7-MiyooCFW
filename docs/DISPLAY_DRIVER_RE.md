@@ -25,6 +25,15 @@ Useful reports:
 - `disassembly.txt`: ARM disassembly using the assumed load address.
 - `elf-header.txt` and `sections.txt`: temporary ARM analysis-object metadata.
 
+Next, scan for literal absolute pointers to the relevant strings:
+
+```sh
+python3 scripts/find-arm-string-xrefs.py \
+  ../extracted/bulk-decoded/drv__display.drv.payload.bin
+```
+
+This is a heuristic scan: ARM code can also form addresses with PC-relative loads or split immediates, so a missing literal pointer does not prove a string is unused.
+
 ## What must be recovered before the panel driver is made hardware-active
 
 - exact command/data transport and whether command/data are sent by SPI or a parallel LCD interface;

@@ -1,0 +1,10 @@
+/build*/
+/.cache/
+*.o
+*.a
+*.elf
+*.bin
+*.img
+*.iso
+*.map
+*.log

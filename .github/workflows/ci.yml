@@ -17,6 +17,7 @@ jobs:
       - name: Check driver analysis scripts
         run: |
           bash -n scripts/analyze-arm-driver.sh
+          bash -n scripts/inspect-arm-window.sh
           python3 -m py_compile scripts/find-arm-string-xrefs.py
       - name: Smoke-test raw ARM payload analysis
         run: |
@@ -26,6 +27,8 @@ jobs:
           PY
           bash scripts/analyze-arm-driver.sh build-arm-payload.bin build/arm-analysis
           grep -Eq 'mov[[:space:]]+r2, r0' build/arm-analysis/disassembly.txt
+          bash scripts/inspect-arm-window.sh build/arm-analysis/arm-payload-wrapper.o 0xe0300000 0x8 0xe0300000 > build/arm-analysis/window.txt
+          grep -q 'e0300000' build/arm-analysis/window.txt
       - name: Configure
         run: cmake -S . -B build -G Ninja -DX7_RAM_MIB=${{ matrix.ram_mib }} -DX7_BUILD_TESTS=ON
       - name: Build

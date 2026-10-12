@@ -22,11 +22,25 @@ objdump=${OBJDUMP:-$(command -v arm-none-eabi-objdump || command -v llvm-objdump
 
 start_num=$((start))
 count_num=$((count))
-stop_num=$((start_num + count_num))
+base_num=$((base))
 
-printf 'Tool: %s\nRange: %s .. 0x%x\nLoad-address adjustment: %s\n' \
-    "$objdump" "$start" "$stop_num" "$base"
+if (( start_num < base_num )); then
+    printf 'ERROR: start address 0x%x is below assumed load base 0x%x\n' "$start_num" "$base_num" >&2
+    exit 2
+fi
+
+# The temporary ELF is ET_REL and its .text section starts at VMA 0. Filter
+# addresses in section-relative coordinates, while adjusting printed VMAs to
+# the original firmware's assumed load address.
+section_start=$((start_num - base_num))
+section_stop=$((section_start + count_num))
+absolute_stop=$((start_num + count_num))
+
+printf 'Tool: %s\n' "$objdump"
+printf 'Requested VA range: 0x%x .. 0x%x\n' "$start_num" "$absolute_stop"
+printf 'Section-relative range: 0x%x .. 0x%x\n' "$section_start" "$section_stop"
+printf 'Assumed load base: 0x%x\n' "$base_num"
 printf 'NOTE: blind disassembly window; literal pools/data may be decoded as instructions.\n\n'
 
-"$objdump" -D -M reg-names-std --adjust-vma="$base" \
-    --start-address="$start" --stop-address="0x$(printf '%x' "$stop_num")" "$object"
+"$objdump" -D -j .text -M reg-names-std --adjust-vma="$base_num" \
+    --start-address="$section_start" --stop-address="$section_stop" "$object"

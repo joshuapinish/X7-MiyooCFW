@@ -29,9 +29,10 @@ if (( start_num < base_num )); then
     exit 2
 fi
 
-# The temporary ELF is ET_REL and its .text section starts at VMA 0. Filter
-# addresses in section-relative coordinates, while adjusting printed VMAs to
-# the original firmware's assumed load address.
+# The synthetic ELF is ET_REL with .text at VMA 0. Ask objdump for a section-
+# relative window first; add the assumed runtime base to printed address labels
+# afterwards. This avoids tool-specific ambiguity about when --adjust-vma is
+# applied relative to --start-address/--stop-address.
 section_start=$((start_num - base_num))
 section_stop=$((section_start + count_num))
 absolute_stop=$((start_num + count_num))
@@ -42,5 +43,16 @@ printf 'Section-relative range: 0x%x .. 0x%x\n' "$section_start" "$section_stop"
 printf 'Assumed load base: 0x%x\n' "$base_num"
 printf 'NOTE: blind disassembly window; literal pools/data may be decoded as instructions.\n\n'
 
-"$objdump" -D -j .text -M reg-names-std --adjust-vma="$base_num" \
-    --start-address="$section_start" --stop-address="$section_stop" "$object"
+"$objdump" -D -j .text -M reg-names-std \
+    --start-address="$section_start" --stop-address="$section_stop" "$object" |
+python3 -c '
+import re, sys
+base = int(sys.argv[1])
+for line in sys.stdin:
+    match = re.match(r"^(\s*)([0-9a-fA-F]+):(.*)$", line.rstrip("\\n"))
+    if match:
+        address = int(match.group(2), 16) + base
+        print(f"{match.group(1)}{address:08x}:{match.group(3)}")
+    else:
+        print(line, end="")
+' "$base_num"

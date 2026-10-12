@@ -42,6 +42,8 @@ Track B is not achieved by copying a Linux panel driver into MiyooCFW's source t
 
 - Driver analysis: `scripts/analyze-arm-driver.sh`
 - String pointer candidates: `scripts/find-arm-string-xrefs.py`
+- Targeted disassembly windows: `scripts/inspect-arm-window.sh`
+- Latest payload offsets: `docs/DISPLAY_ANALYSIS_NOTES_2026-10-12.md`
 - Original driver report: `docs/DISPLAY_DRIVER_RE.md`
 - MiyooCFW kernel: https://github.com/MiyooCFW/kernel/tree/add4deb177dfd8d2324650703f0014e9c862baa8
 - MiyooCFW suniv board DTS: https://github.com/MiyooCFW/kernel/blob/add4deb177dfd8d2324650703f0014e9c862baa8/arch/arm/boot/dts/suniv-f1c100s-miyoo.dts

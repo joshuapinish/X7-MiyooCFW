@@ -49,7 +49,7 @@ python3 -c '
 import re, sys
 base = int(sys.argv[1])
 for line in sys.stdin:
-    match = re.match(r"^(\s*)([0-9a-fA-F]+):(.*)$", line.rstrip("\\n"))
+    match = re.match(r"^(\s*)([0-9a-fA-F]+):(.*)$", line.rstrip("\n"))
     if match:
         address = int(match.group(2), 16) + base
         print(f"{match.group(1)}{address:08x}:{match.group(3)}")

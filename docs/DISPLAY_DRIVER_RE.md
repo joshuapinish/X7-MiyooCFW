@@ -1,35 +1,43 @@
 # Recovering the original X7 display driver
 
-The source of truth for the board's panel initialization is the original driver and its configuration, not a generic ILI9806E example.
+The source of truth for the board's panel setup is the original driver and its configuration, not a generic ILI9806E example.
 
-## Run the local analysis
+## Important: original driver vs decoded payload
 
-From the X7 MiyooCFW checkout, assuming the extraction directory is a sibling under `~/X7-FirmwareLab`:
+The original `extracted/original-fat16/drv/display.drv` is only 56,252 bytes. Its ELF section table describes an executable section of `0x344f4` bytes (214,260 bytes), larger than the file itself. The bulk-decoded payload has exactly 214,260 bytes and contains the display identifier and related configuration strings. Treat the original file as a custom ePOS module/container rather than passing it directly to a normal ELF disassembler.
+
+## Run the local analysis on the decoded ARM payload
+
+From `~/X7-FirmwareLab/X7-MiyooCFW-test`:
 
 ```sh
+git pull --ff-only origin x7-port
 bash scripts/analyze-arm-driver.sh \
-  ../extracted/original-fat16/drv/display.drv \
-  build/driver-analysis
+  ../extracted/bulk-decoded/drv__display.drv.payload.bin \
+  build/driver-analysis-decoded
 ```
 
-The script does not modify the original binary. It records the input SHA-256, ELF header, program headers, sections, symbols, printable strings and available disassembly under `build/driver-analysis/`.
+The script records the input SHA-256, strings and ARM disassembly. For a raw payload, it creates a temporary ELF wrapper at `build/driver-analysis-decoded/arm-payload-wrapper.o` so GNU/LLVM objdump can decode ARM instructions. That wrapper exists **only for analysis** and is not a bootable binary. The default display-driver load address comes from the original ELF entry point, `0xe0300000`; override it using `X7_DRIVER_BASE=0x...` only if new evidence supports a different address.
 
-For a raw decoded payload, use the original `drv/display.drv` ELF first. The payload may no longer carry ELF section/virtual-address information, so its offsets cannot safely be treated as link-time addresses.
+Useful reports:
+- `metadata.txt`: input identity, hash and analysis mode.
+- `display-strings.txt`: relevant strings with offsets in the raw payload.
+- `disassembly.txt`: ARM disassembly using the assumed load address.
+- `elf-header.txt` and `sections.txt`: temporary ARM analysis-object metadata.
 
-## Required evidence before writing a physical init table
+## What must be recovered before the panel driver is made hardware-active
 
-Extract and document:
 - exact command/data transport and whether command/data are sent by SPI or a parallel LCD interface;
 - GPIO/pin assignments and active polarity for reset, panel enable and backlight;
-- panel reset timing and complete controller command/data sequence;
-- pixel format, orientation, lane/bus mode, porches, sync polarities, pixel clock and refresh rate;
+- panel reset timing and full controller command/data sequence;
+- pixel format, orientation, bus mode, porches, sync polarities, pixel clock and refresh rate;
 - the configuration object/file used by the driver's `lcd0_para`, `lcd_bl_en_used` and `lcd_pwm_used` lookups.
 
-The known identifier is `LCD_HSD045F8W7_9806E__4_5`. Do not assume a string offset in the ELF equals its runtime address; use ELF section offsets and virtual addresses. Do not enable the backlight until panel power/reset sequencing is understood.
+The firmware contains the identifier `LCD_HSD045F8W7_9806E__4_5`. Do not assume a string offset equals its runtime address unless the load address and mapping are verified. Keep physical reset/backlight operations disabled until power sequencing is understood.
 
 ## MiyooCFW platform compatibility
 
-The upstream MiyooCFW porting docs reference an Allwinner suniv/F1C500S kernel/device tree and a matching U-Boot configuration. This is not a drop-in kernel for an Actions ATJ227X board. Reusing MiyooCFW's userspace, Buildroot recipes or emulators may be possible after a compatible Linux boot chain, kernel port and board support exist. The original display driver being ARM ELF only confirms its instruction-set ABI, not Linux API compatibility.
+MiyooCFW's existing board support is not a drop-in kernel for an Actions ATJ227X board. Reusing userland/Buildroot recipes may be feasible after a compatible Linux boot chain, kernel port and board support exist. The original driver being ARM ELF family only confirms the instruction-set ABI, not Linux API compatibility.
 
 References:
 - MiyooCFW build guide: https://github.com/TriForceX/MiyooCFW/wiki/Build-Source-DEPRECATED

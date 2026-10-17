@@ -2,7 +2,7 @@
 
 **Current status: undecided. There is not yet enough evidence to claim that the target can boot Linux.**
 
-The original firmware includes ARM ELF-like applications and proprietary-looking `.drv`, `.mod`, and `.plg` artifacts. These extensions do not prove that the current runtime is Linux. The exact processor core, memory map, MMU support, boot protocol, and available kernel support must be established.
+The original firmware includes proprietary-looking `.drv`, `.mod`, and `.plg` artifacts. Prior local analysis reported at least one ARM ELF, but public reverse-engineering notes for related ATJ227x devices and the Actions ActSDK identify a MIPS 4KEc / µC/OS-II environment. That conflict is unresolved for this exact X7 MP5; see [ISA/runtime discrepancy](ISA_RUNTIME_DISCREPANCY.md). Neither Linux feasibility nor impossibility should be asserted until the SoC marking and original ELF headers are verified. The core, memory map, MMU support, boot protocol and available kernel/BSP must be established.
 
 ## Evidence needed for a Linux go/no-go decision
 

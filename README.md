@@ -11,6 +11,8 @@ Investigate whether MiyooCFW components or a compatible Linux-based firmware can
 ## Start here
 
 - [Development roadmap](ROADMAP.md)
+- [First read-only fire-test campaign](docs/FIRETESTS.md)
+- [MiyooCFW architecture and port implications](docs/MIYOO_ARCHITECTURE.md)
 - [Hardware findings](docs/HARDWARE.md)
 - [Compatibility assessment](docs/COMPATIBILITY.md)
 - [Boot-process investigation](docs/BOOT_PROCESS.md)

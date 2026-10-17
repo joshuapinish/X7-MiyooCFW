@@ -24,7 +24,7 @@ Investigate whether MiyooCFW components or a compatible Linux-based firmware can
 ## Current evidence snapshot
 
 - The original firmware has been extracted for analysis; relevant decoded artifacts include application payloads such as `apps__home.axf.payload.bin`, `apps__init.axf.payload.bin`, `apps__game_gba.axf.payload.bin`, `apps__game_sfc.axf.payload.bin`, `apps__game_md.axf.payload.bin`, and the `drv__display.drv.payload.bin` / `drv__audio.drv.payload.bin` payloads.
-- The original `drv/display.drv` has been identified as a 32-bit little-endian ARM ELF, EABI version 4, statically linked and stripped.
+- Prior local analysis reported `drv/display.drv` as a 32-bit little-endian ARM ELF/EABI4, but public reverse-engineering sources for related Actions ATJ227x devices point to MIPS/µC/OS-II. ISA and exact SoC identity are now a blocking verification item; see [the discrepancy report](docs/ISA_RUNTIME_DISCREPANCY.md).
 - The display-driver strings include `LCD_HSD045F8W7_9806E__4_5`. The exact panel timings, wiring, reset sequence, pixel format, and effective display mode still require confirmation.
 - A full SD image was previously recorded at `/home/joshua/sd-backup-completo.img` with a size of 7,988,051,968 bytes. Checksum and end-to-end verification status must be recorded before treating it as a verified recovery image.
 - A PC-accessible FAT volume was observed at `/run/media/joshua/3EDF-BD13` with `GAME/` and `GAME_MEMORY/` directories. The block-device identity and relationship to the console's boot medium are not yet proven.

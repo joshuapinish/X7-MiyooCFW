@@ -21,6 +21,12 @@
 6. Inspect any physically exposed UART only after identifying safe voltage levels and pinout. Never connect a 3.3 V USB-UART adapter to an unknown-voltage pin.
 7. Record all observations with file offsets, tool versions, hashes, and exact hardware revision.
 
+## ATJ firmware-container lead
+
+Public reverse-engineering notes for related ATJ227x devices describe firmware-update files that can be vendor-encrypted and decode into an SQLite database containing firmware records; an inner image may then contain a FAT filesystem. The public [ATJ227X_firmware_tools](https://github.com/mcirsta/ATJ227X_firmware_tools) utility checks a specific update signature before descrambling a recognized package.
+
+This is a lead, not proof that the X7's epos.img or full SD image uses that format. First inspect the exact file with file and its first 64 bytes. Do not point the tool at a multi-gigabyte whole-card image or arbitrary .img and assume the output is valid. If a suspected vendor update file matches the expected signature, work on a separate copy and direct all outputs into a dedicated analysis directory. Record input hash, output hash, tool version, and any database/file signatures found.
+
 ## Minimum recovery gate
 
 Before any write or boot experiment, record:

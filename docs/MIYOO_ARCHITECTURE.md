@@ -21,6 +21,10 @@ Reference: [MiyooCFW legacy build guide](https://github.com/TriForceX/MiyooCFW/w
 
 Upstream releases have used uClibc and musl rootfs builds. An executable compiled for one of these environments is not automatically compatible with the X7's original runtime, even if both CPUs execute ARM instructions.
 
+## Critical X7 ISA/runtime uncertainty
+
+Public reverse-engineering notes for related Actions ATJ227x hardware describe MIPS-targeted ELF applications running under µC/OS-II, and the public ActSDK identifies a MIPS 4KEc target. Prior local analysis of this project's original display driver reported ARM ELF/EABI4. Those results conflict and the exact X7 MP5 SoC/revision is not yet verified. Consult [ISA/runtime discrepancy](ISA_RUNTIME_DISCREPANCY.md) and obtain the original files' readelf headers before selecting any cross-compiler or judging which binaries can be reused.
+
 ## What this means for our port
 
 A full MiyooCFW port is not simply copying the menu or SD image to the X7. We must establish a compatible boot flow and kernel/platform layer first. The following are separate workstreams:

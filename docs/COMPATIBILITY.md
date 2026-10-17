@@ -12,7 +12,7 @@ The upstream MiyooCFW wiki states that supported devices use Allwinner F1C100S o
 |---|---|---|
 | Exact X7 MP5 SoC | Candidate: Actions ATJ2273B / ATJ2273S | Physical marking or reliable silicon identifier. |
 | MiyooCFW boot image | Not compatible by assumption; untested | A supported boot chain and board-specific image format must be established. |
-| CPU/ISA | Some original driver artifacts are ARM ELF | Determine core, instruction set extensions, endianness, ABI and privilege/runtime assumptions. “ARM” alone is insufficient. |
+| CPU/ISA and runtime | Prior local analysis reported an ARM ELF, but related ATJ227x reverse-engineering references identify MIPS 4KEc and µC/OS-II | Re-run readelf on the original app/driver ELFs and verify the physical SoC marking; resolve this contradiction before choosing a toolchain. |
 | Linux kernel support | Unknown | Find a usable kernel/BSP or prove a feasible board port with required drivers. |
 | Bootloader / boot process | Unknown | Recover image layout and boot logs; identify signature, packaging, and load-address requirements. |
 | LCD | Partially identified by driver strings | Reconstruct initialization, timings, pixel format, framebuffer path, and backlight control. |
@@ -20,6 +20,10 @@ The upstream MiyooCFW wiki states that supported devices use Allwinner F1C100S o
 | Controls | Original input driver artifacts exist | Decode key mapping and identify GPIO/ADC/input mechanism. |
 | Storage | FAT32 game volume observed | Establish actual storage device topology and boot/update mechanism. |
 | Portable applications/frontends | Potential reuse only | Check libc, kernel interfaces, architecture, dependencies, and memory/CPU budget. |
+
+## ISA/runtime blocker
+
+See [ISA/runtime discrepancy](ISA_RUNTIME_DISCREPANCY.md). A public reverse-engineering account for related ATJ227x hardware describes µC/OS-II, MIPS-targeted ELF applications and an Actions-specific runtime. The user's exact SoC and the previously reported ARM ELF driver have not yet been reconciled. This is a high-priority evidence gap, not a proven impossibility result.
 
 ## Strategy branches
 

@@ -13,6 +13,7 @@ Investigate whether MiyooCFW components or a compatible Linux-based firmware can
 - [Development roadmap](ROADMAP.md)
 - [First read-only fire-test campaign](docs/FIRETESTS.md)
 - [MiyooCFW architecture and port implications](docs/MIYOO_ARCHITECTURE.md)
+- [ISA/runtime discrepancy: mandatory verification](docs/ISA_RUNTIME_DISCREPANCY.md)
 - [Hardware findings](docs/HARDWARE.md)
 - [Compatibility assessment](docs/COMPATIBILITY.md)
 - [Boot-process investigation](docs/BOOT_PROCESS.md)

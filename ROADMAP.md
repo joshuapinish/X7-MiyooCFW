@@ -52,6 +52,12 @@ X7-MiyooCFW/
 - [ ] Record board revision, RAM package/size, flash/SD topology, LCD marking, and connector/pin details.
 - [ ] Build a compatibility matrix instead of treating all X7 devices as identical.
 
+### M1a — Resolve CPU ISA and runtime (blocking gate)
+- [ ] Re-run readelf on original display driver, home app, init app and at least one emulator.
+- [ ] Resolve prior ARM ELF/EABI4 report versus related ATJ227x MIPS 4KEc / µC/OS-II research.
+- [ ] Confirm physical SoC marking and whether all application artifacts target one ISA/runtime.
+- [ ] Select a cross-toolchain only after the ISA and runtime are evidenced.
+
 ### M2 — Complete original-firmware analysis
 - [ ] Inventory image partitions, headers, boot-related blobs, and all executable formats.
 - [ ] Determine executable ABI, CPU instruction set, memory assumptions, and runtime environment.

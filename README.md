@@ -1,21 +1,42 @@
-# X7 MiyooCFW port
+# X7-MiyooCFW
 
-Experimental porting workspace for the X7 MP5 handheld.
+Experimental research and hardware bring-up for an alternative firmware project targeting X7 / MP5 handheld revisions.
 
-**Status: bring-up scaffold, not a flashable firmware image.** This project currently establishes a host-buildable display-driver interface and automated tests before hardware-specific register sequences or a boot image are attempted.
+**Status: research and bring-up only. This repository does not currently provide a bootable or flashable firmware image.**
 
-## Hardware findings
+## Objective
 
-- Original firmware contains the panel driver identifier `LCD_HSD045F8W7_9806E__4_5`.
-- The controller is being investigated as an ILI9806E-family device. Panel timing, bus wiring, reset polarity, command table, and pixel format still need confirmation against the original driver and the physical board.
-- The original display driver is a 32-bit little-endian ARM ELF (EABI4).
-- ARM instruction compatibility does **not** establish Linux kernel, bootloader, or MiyooCFW compatibility.
+Investigate whether MiyooCFW components or a compatible Linux-based firmware can be adapted to the X7 MP5. The project does not assume that all devices branded X7 share the same hardware, or that a device can run Linux merely because some firmware binaries are ARM executables.
 
-## RAM target
+## Start here
 
-Support a configurable range from 32 MiB to 256 MiB. Do not assume every X7 unit has 256 MiB. Runtime reservations and kernel/userspace limits depend on a confirmed memory map.
+- [Development roadmap](ROADMAP.md)
+- [Hardware findings](docs/HARDWARE.md)
+- [Compatibility assessment](docs/COMPATIBILITY.md)
+- [Boot-process investigation](docs/BOOT_PROCESS.md)
+- [Original firmware analysis](docs/FIRMWARE_ANALYSIS.md)
+- [Linux feasibility decision](docs/LINUX_FEASIBILITY.md)
+- [Research references](research/REFERENCES.md)
+
+## Current evidence snapshot
+
+- The original firmware has been extracted for analysis; relevant decoded artifacts include application payloads such as `apps__home.axf.payload.bin`, `apps__init.axf.payload.bin`, `apps__game_gba.axf.payload.bin`, `apps__game_sfc.axf.payload.bin`, `apps__game_md.axf.payload.bin`, and the `drv__display.drv.payload.bin` / `drv__audio.drv.payload.bin` payloads.
+- The original `drv/display.drv` has been identified as a 32-bit little-endian ARM ELF, EABI version 4, statically linked and stripped.
+- The display-driver strings include `LCD_HSD045F8W7_9806E__4_5`. The exact panel timings, wiring, reset sequence, pixel format, and effective display mode still require confirmation.
+- A full SD image was previously recorded at `/home/joshua/sd-backup-completo.img` with a size of 7,988,051,968 bytes. Checksum and end-to-end verification status must be recorded before treating it as a verified recovery image.
+- A PC-accessible FAT volume was observed at `/run/media/joshua/3EDF-BD13` with `GAME/` and `GAME_MEMORY/` directories. The block-device identity and relationship to the console's boot medium are not yet proven.
+
+These observations do **not** establish the exact SoC revision, available RAM, boot ROM behavior, bootloader, kernel, or ability to boot Linux.
+
+## Important compatibility warning
+
+Upstream MiyooCFW documents support for Allwinner F1C100S/F1C500S devices, with some display and hardware revisions needing extra work. Its wiki lists the Powkiddy X7 as unconfirmed; that listing does not prove compatibility with this project's X7 MP5. The target under investigation is the Actions Semiconductor ATJ227x family (candidate ATJ2273B / ATJ2273S); the precise chip marking and board revision must be verified.
+
+A MiyooCFW disk image must not be written to the X7. Reusing portable applications or a frontend may be possible, but a full firmware port requires a compatible boot chain, kernel or equivalent platform layer, and working drivers.
 
 ## Host build
+
+The current CMake project validates a portable display-core interface only:
 
 ```sh
 cmake -S . -B build -DX7_BUILD_TESTS=ON
@@ -23,15 +44,13 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-This validates the portable display core only. It does not initialize the physical LCD or produce bootable firmware.
+Passing these tests does not initialize the physical LCD and does not produce bootable firmware.
 
-## Bring-up plan
+## Safety
 
-1. Compile and test the portable display core.
-2. Recover the real init table and bus configuration from the original ARM driver.
-3. Confirm exact SoC revision, boot chain, RAM map, and peripherals.
-4. Select/port a matching Linux kernel and Buildroot configuration.
-5. Integrate the verified panel driver and create a recoverable SD test image.
-6. Test from removable media while preserving the original full-card image.
-
-Never flash a generated image to the original card until the boot chain and recovery procedure are understood.
+- Do not write to a block device until its identity is confirmed.
+- Preserve the original image and compute a cryptographic hash; keep a second copy on another physical device.
+- Do not flash an image just because its filename contains “X7”.
+- Do not attempt bootloader, partition-table, or firmware writes until recovery is documented and independently tested.
+- Do not publish commercial ROMs, complete vendor firmware images, or proprietary binaries without redistribution permission.
+- Clearly label every feature as confirmed, experimental, or unknown.

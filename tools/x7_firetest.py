@@ -17,11 +17,11 @@ TEXT_EXT = {".fex", ".ini", ".cfg", ".conf", ".desktop", ".reg", ".txt", ".xml"}
 PAYLOAD_PREFIXES = ("apps__", "drv__", "mod__", "cedar__")
 SIGNALS = re.compile(
     r"(linux version|u-boot|uboot|bootargs|root=/dev|/proc/|/sys/|/dev/fb|"
-    r"framebuffer|buildroot|busybox|glibc|uclibc|musl|libc\\.so|"
-    r"application://|game_[a-z0-9_]+|\\.axf|lcd|display|disp|audio|sound|"
+    r"framebuffer|buildroot|busybox|glibc|uclibc|musl|libc\.so|"
+    r"application://|game_[a-z0-9_]+|\.axf|lcd|display|disp|audio|sound|"
     r"alsa|oss|key|button|gpio|mmc|sdio|usb|dram|lcd0_para|HSD045F8W7|"
     r"9806E|ATJ227|ATS3603|actions semiconductor|SPIWRITE|SPI_WriteComm|"
-    r"b:\\\\|d:\\\\|setenv|console=tty|kernel|initrd|ramdisk)",
+    r"b:\\|d:\\|setenv|console=tty|kernel|initrd|ramdisk)",
     re.IGNORECASE,
 )
 
@@ -168,7 +168,11 @@ def main():
 
     def is_binary_candidate(path):
         name = path.name.lower()
+        key_files = {"epos.img", "app_config.bin", "theme.bin", "lang.bin",
+                     "key_ref.dat", "secret.bin"}
         if path.suffix.lower() in EXEC_EXT:
+            return True
+        if name in key_files:
             return True
         return path.suffix.lower() == ".bin" and name.startswith(PAYLOAD_PREFIXES)
 
